@@ -7,11 +7,11 @@
 }
 
 body.dark {
-  --bg: #1a1a2e;
-  --card: #2e2c44;
-  --text: #e6e6fa;
-  --muted: #9a94b0;
-  --border: #3a374e;
+   --bg: #0d1117;       
+  --card: #161b22;     
+  --text: #c9d1d9;     
+  --muted: #8b949e;   
+  --border: #30363d; 
 }
 
 body {
@@ -166,3 +166,4 @@ button.delete:hover {
     padding: 8px;
   }
 }
+
