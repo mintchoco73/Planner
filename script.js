@@ -9,6 +9,34 @@ toggle.onclick = () => {
   localStorage.setItem("dark", body.classList.contains("dark"));
 };
 
+/* ---------- LOCAL STORAGE HELPERS ---------- */
+function saveDayToLocal(day) {
+  const dayNum = day.dataset.day;
+  const rows = [];
+  day.querySelectorAll(".row:not(.header)").forEach(row => {
+    const inputs = row.querySelectorAll("input");
+    rows.push({
+      time: inputs[0].value,
+      activity: inputs[1].value,
+      cost: inputs[2].value
+    });
+  });
+  localStorage.setItem(`day-${dayNum}`, JSON.stringify(rows));
+}
+
+function loadDayFromLocal(day) {
+  const dayNum = day.dataset.day;
+  const data = JSON.parse(localStorage.getItem(`day-${dayNum}`) || "[]");
+  const timetable = day.querySelector(".timetable");
+  timetable.innerHTML = "";
+  if(data.length === 0) {
+    // If no saved data, create one default row
+    addRow(timetable, {}, true);
+  } else {
+    data.forEach((rowData, i) => addRow(timetable, rowData, i === 0));
+  }
+}
+
 /* ---------- ADD / DELETE ROW ---------- */
 function addRow(timetable, data={}, isFirst=false){
   const row = document.createElement("div");
@@ -24,10 +52,15 @@ function addRow(timetable, data={}, isFirst=false){
   attachRowEvents(row, isFirst);
   attachCostInput(row);
   updateTotal();
+
+  // Save changes immediately
+  const day = timetable.closest(".day");
+  saveDayToLocal(day);
 }
 
 function attachRowEvents(row, isFirst=false){
   const timetable = row.parentElement;
+  const day = row.closest(".day");
 
   // Add row
   row.querySelector(".add").onclick = () => addRow(timetable);
@@ -43,12 +76,16 @@ function attachRowEvents(row, isFirst=false){
       if(timetable.querySelectorAll(".row:not(.header)").length <= 1) return;
       row.remove();
       updateTotal();
+      saveDayToLocal(day);
     }
   }
 
   // Save input changes
   row.querySelectorAll("input").forEach(i=>{
-    i.addEventListener("input", updateTotal);
+    i.addEventListener("input", ()=>{
+      updateTotal();
+      saveDayToLocal(day);
+    });
     if(i.dataset.type==='cost'){
       attachCostInput(row);
     }
@@ -64,6 +101,9 @@ function attachCostInput(row){
     let val = parseFloat(input.value.replace(/[^0-9.]/g,''));
     input.value = !isNaN(val) ? `$${val.toFixed(2)}` : '$0.00';
     updateTotal();
+
+    const day = row.closest(".day");
+    saveDayToLocal(day);
   });
 }
 
@@ -77,7 +117,6 @@ function updateTotal(){
     });
   });
 
-  // Create or update total popup
   let popup = document.getElementById("total-popup");
   if(!popup){
     popup = document.createElement("div");
@@ -102,11 +141,7 @@ function updateTotal(){
 
 /* ---------- INIT ---------- */
 document.querySelectorAll(".day").forEach(day=>{
-  day.querySelectorAll(".row:not(.header)").forEach((row,index)=>{
-    attachRowEvents(row,index===0);
-    attachCostInput(row);
-  });
+  loadDayFromLocal(day); // Load saved rows from localStorage
 });
-
-// Initial total popup
 updateTotal();
+
