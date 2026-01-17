@@ -7,11 +7,11 @@
 }
 
 body.dark {
-  --bg: #0d1117;       
-  --card: #161b22;     
-  --text: #c9d1d9;     
-  --muted: #8b949e;   
-  --border: #30363d; 
+  --bg: #1a1a2e;
+  --card: #2e2c44;
+  --text: #e6e6fa;
+  --muted: #9a94b0;
+  --border: #3a374e;
 }
 
 body {
@@ -22,6 +22,7 @@ body {
   color: var(--text);
 }
 
+/* Header */
 header {
   display: flex;
   justify-content: center;
@@ -39,6 +40,7 @@ header {
   font-size: 1rem;
 }
 
+/* Day container */
 .day-container {
   max-width: 900px;
   margin: auto;
@@ -52,6 +54,13 @@ header {
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
+.day h2 {
+  margin-top: 0;       /* remove gap at top */
+  margin-bottom: 12px; /* small space to timetable */
+  font-size: 1.5rem;
+}
+
+/* Timetable rows */
 .timetable {
   display: flex;
   flex-direction: column;
@@ -66,10 +75,20 @@ header {
 }
 
 .row.header {
+  display: grid;
+  grid-template-columns: auto 1fr 3fr 1fr auto; /* same as rows */
+  gap: 10px;
+  align-items: center;
   font-size: 0.75rem;
   color: var(--muted);
 }
 
+.row.header span {
+  display: block;
+  padding: 10px 0; /* vertical padding only */
+}
+
+/* Inputs */
 input {
   padding: 10px;
   border-radius: 8px;
@@ -78,8 +97,24 @@ input {
   color: var(--text);
   width: 100%;
   box-sizing: border-box;
+  height: 40px; /* fixed height for alignment */
+  line-height: 1.2;
 }
 
+/* Time input flush fix */
+input[type="time"] {
+  padding: 10px;
+  height: 40px; /* same as other inputs */
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-clear-button {
+  display: none; /* remove extra buttons in Chrome/Safari */
+}
+
+/* Buttons */
 button.add,
 button.delete {
   border: none;
@@ -99,7 +134,7 @@ button.delete:hover {
   color: #ef4444;
 }
 
-/* Floating total cost pop-up */
+/* Floating total cost popup */
 #total-popup {
   position: fixed;
   bottom: 20px;
@@ -114,16 +149,18 @@ button.delete:hover {
   z-index: 1000;
 }
 
-/* Mobile Responsive */
+/* Mobile responsive */
 @media (max-width: 650px) {
   .row {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
+
   .row.header {
-    display: none;
+    display: none; /* hide header on mobile */
   }
+
   button.add, button.delete {
     font-size: 1.6rem;
     padding: 8px;
